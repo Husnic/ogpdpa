@@ -9,19 +9,30 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "clsx": "^2.1.1",
+    "date-fns": "^4.4.0",
+    "lucide-react": "^1.82.0",
+    "lz-string": "^1.5.0",
+    "next": "15.5.29",
     "react": "19.1.0",
     "react-dom": "19.1.0",
-    "next": "15.5.29"
+    "recharts": "^3.11.1",
+    "tailwind-merge": "^3.7.1",
+    "zustand": "^5.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@eslint/eslintrc": "^3",
+    "@tailwindcss/postcss": "^4",
+    "@types/d3-geo": "^3.1.1",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
-    "@tailwindcss/postcss": "^4",
-    "tailwindcss": "^4",
+    "d3-geo": "^3.1.2",
     "eslint": "^9",
     "eslint-config-next": "15.5.29",
-    "@eslint/eslintrc": "^3"
+    "tailwindcss": "^4",
+    "topojson-client": "^3.1.0",
+    "topojson-server": "^3.0.1",
+    "typescript": "^5"
   }
 }

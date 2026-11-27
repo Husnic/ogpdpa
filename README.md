@@ -1,36 +1,64 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# OGPDPA Operations Dashboard — prototype
 
-## Getting Started
+Frontend-only prototype for the Ogun State Planning and Development Permit Authority. It covers zonal operations (applications, revenue, enforcement, petitions and assignments), automatic weekly, monthly and quarterly reports, and HQ oversight across all zonal planning offices. Requirements are in [`../REQUIREMENTS.md`](../REQUIREMENTS.md).
 
-First, run the development server:
+## Run
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev          # http://localhost:3000
+npm run build        # production build / type check
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+On first load the app generates a deterministic dataset in the browser:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+- 13 zones and 82 staff
+- Activity from 1 Jan of the current year up to today: about 1.7k applications with full status history, payments, enforcement cases, petitions, assignments, report submissions and an audit trail
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The dataset is saved to `localStorage` (LZ-compressed, key `ogpdpa-prototype`). Every change after that is saved there too, so the flows can be evaluated end to end.
 
-## Learn More
+## Prototype controls (bottom-right)
 
-To learn more about Next.js, take a look at the following resources:
+- **Active role:** switch between all 6 roles: Super Admin, HQ Director, HQ Records, ZTPO, Planning Officer and Clerical.
+- **Zone:** choose which zonal office the zonal roles belong to.
+- **Deputy acting ZTPO:** lets the deputy approve permits.
+- **Simulated today:** replay any date. Periods, SLAs and due dates follow it.
+- **Reset data / Export JSON.**
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+To hide the panel, set `NEXT_PUBLIC_DEV_TOOLS=false`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Architecture
 
-## Deploy on Vercel
+```
+src/
+  app/                  routes (App Router). (app)/ holds the authenticated shell.
+  components/
+    ui.tsx              design-system primitives (Button, Card, Badge, Segmented, Tabs, Modal, Table…)
+    charts.tsx          chart kit (Recharts) — validated palette, dark tooltip chips
+    widgets.tsx         Stat, MiniStat, HeroCard, PeriodPicker
+    zone-map.tsx        illustrated Ogun State zone map (HQ: choropleth + select; zone: own zone lit)
+    reports/            print-faithful report layouts (weekly, monthly, quarterly)
+  lib/
+    types.ts            domain model
+    catalog.ts          use types, fee heads, notices, statuses, roles, palettes
+    rbac.ts             permission matrix + can()
+    store.ts            Zustand store + persisted localStorage DB + domain actions (audit-logged)
+    selectors.ts        pure metrics & report tables (zone-indexed, cached timestamps)
+    reports.ts          report builders + submission snapshot/diff
+    seed.ts             deterministic data generator
+    fees.ts, periods.ts, format.ts, csv.ts
+  fonts/                Satoshi (Indian Type Foundry, Fontshare Free Font Licence — FFL.txt)
+scripts/build-map.mjs   builds src/lib/geo/ogun-map.ts from geoBoundaries NGA ADM2 (CC BY 4.0)
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+How the code is organised:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. **One source of truth.** Every dashboard figure and report number comes from pure selectors over the logged records. Submitted reports freeze a snapshot, so later changes to records show up as drift.
+2. **RBAC in one place.** `can(user, action)` controls navigation, pages and buttons.
+3. **Store boundary.** UI → hooks/store actions. To move to a real backend, replace the store's persistence and actions with a Supabase or REST client. Selectors and UI stay as they are.
+
+## Notes and assumptions
+
+- **Zone geography:** zone boundaries are unions of real LGA boundaries, but the grouping of LGAs into zones is illustrative. Replace it with OGPDPA's official zone list and re-run `scripts/build-map.mjs`.
+- **Fees:** fee rates, the meaning of the registration-number series letter (A–D) and the due dates are placeholders. They're listed as open questions in REQUIREMENTS.md §10.
+- **Personal data:** all names, phone numbers and addresses in the dataset are fictional.

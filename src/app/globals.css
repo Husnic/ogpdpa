@@ -1,26 +1,156 @@
 @import "tailwindcss";
 
+/* Design tokens — modern minimal SaaS: soft neutral canvas, white bento cards,
+   pill controls, one vivid accent (Ogun green) with a bronze highlight from the state seal. */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas: #f3f4f1;
+  --surface: #ffffff;
+  --surface-2: #f5f6f3;
+  --surface-3: #eceee9;
+  --line: #ebece7;
+  --line-strong: #dadcd5;
+  --ink: #101512;
+  --ink-2: #5a635e;
+  --ink-3: #98a09b;
+  --brand: #178a4f;
+  --brand-strong: #0f6b3b;
+  --brand-soft: #e5f4eb;
+  --brand-tint: #f3faf6;
+  --bronze: #c08a2e;
+  --bronze-soft: #f9efdc;
+  --good: #178a4f;
+  --good-soft: #e5f4eb;
+  --warn: #b7791f;
+  --warn-soft: #fbf0dc;
+  --crit: #d0452f;
+  --crit-soft: #fbe7e3;
+  --info: #3b6fd8;
+  --info-soft: #e8effc;
+  --side-from: #0f3a27;
+  --side-to: #090d0b;
+  --tip: #111613;
+  --map-sea: #f5f6f2;
+  --map-land: #eceee7;
+  --radius-card: 20px;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-canvas: var(--canvas);
+  --color-paper: var(--canvas);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand);
+  --color-brand-strong: var(--brand-strong);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-tint: var(--brand-tint);
+  --color-bronze: var(--bronze);
+  --color-bronze-soft: var(--bronze-soft);
+  --color-good: var(--good);
+  --color-good-soft: var(--good-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-crit: var(--crit);
+  --color-crit-soft: var(--crit-soft);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-tip: var(--tip);
+  --font-sans: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+html {
+  color-scheme: light;
 }
-
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--canvas);
+  color: var(--ink);
+  font-family: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.font-display {
+  font-family: var(--font-satoshi), ui-sans-serif, system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--line-strong) transparent;
+}
+
+.side-gradient {
+  background: linear-gradient(180deg, var(--side-from) 0%, #0c1f16 45%, var(--side-to) 100%);
+}
+
+/* Map */
+.zone-shape {
+  transition: fill 0.35s ease, opacity 0.35s ease, stroke-width 0.2s ease;
+}
+@keyframes ping-soft {
+  0% { transform: scale(0.6); opacity: 0.7; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.map-ping {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: ping-soft 2.4s ease-out infinite;
+}
+@keyframes rise {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+.rise {
+  animation: rise 0.4s ease both;
+}
+
+/* Recharts */
+.recharts-surface:focus,
+.recharts-wrapper:focus,
+.recharts-sector:focus,
+.recharts-rectangle:focus {
+  outline: none;
+}
+
+/* Print: official report layout */
+@media print {
+  @page {
+    size: A4;
+    margin: 14mm 12mm;
+  }
+  body {
+    background: #fff;
+  }
+  .no-print {
+    display: none !important;
+  }
+  .print-area {
+    box-shadow: none !important;
+    border: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    max-width: none !important;
+  }
+  .page-break {
+    break-before: page;
+  }
+  .avoid-break {
+    break-inside: avoid;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .print-shell {
+    padding-left: 0 !important;
+  }
 }
